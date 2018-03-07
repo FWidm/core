@@ -2,12 +2,12 @@
 
 namespace Apiato\Core\Foundation;
 
+use Apiato\Core\Exceptions\ClassDoesNotExistException;
+use Apiato\Core\Exceptions\MissingContainerException;
 use Apiato\Core\Exceptions\WrongConfigurationsException;
 use Apiato\Core\Traits\CallableTrait;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
-use Apiato\Core\Exceptions\ClassDoesNotExistException;
-use Apiato\Core\Exceptions\MissingContainerException;
 
 /**
  * Class Apiato
@@ -18,6 +18,7 @@ use Apiato\Core\Exceptions\MissingContainerException;
  */
 class Apiato
 {
+
     use CallableTrait;
 
     /**
@@ -205,7 +206,8 @@ class Apiato
     }
 
     /**
-     * @return  mixed
+     * @return mixed
+     * @throws WrongConfigurationsException
      */
     public function getLoginWebPageName()
     {
@@ -249,21 +251,26 @@ class Apiato
 
     /**
      * @param $containerName
+     *
+     * @throws MissingContainerException
      */
     public function verifyContainerExist($containerName)
     {
-        if(!is_dir(app_path('Containers/' . $containerName))){
+        if (!is_dir(app_path('Containers/' . $containerName))) {
             throw new MissingContainerException("Container ($containerName) is not installed.");
         }
     }
 
     /**
      * @param $className
+     *
+     * @throws ClassDoesNotExistException
      */
     public function verifyClassExist($className)
     {
-        if(!class_exists($className)){
+        if (!class_exists($className)) {
             throw new ClassDoesNotExistException("Class ($className) is not installed.");
         }
     }
+
 }

@@ -70,7 +70,7 @@ class MigrationGenerator extends GeneratorCommand implements ComponentsGenerator
     ];
 
     /**
-     * urn mixed|void
+     * @return array|null
      */
     public function getUserInputs()
     {
@@ -106,7 +106,7 @@ class MigrationGenerator extends GeneratorCommand implements ComponentsGenerator
             'stub-parameters' => [
                 '_container-name' => Str::lower($this->containerName),
                 'container-name' => $this->containerName,
-                'class-name' => $this->fileName,
+                'class-name' => Str::studly($this->fileName),
                 'table-name' => $tablename
             ],
             'file-parameters' => [
@@ -124,5 +124,17 @@ class MigrationGenerator extends GeneratorCommand implements ComponentsGenerator
     public function getDefaultFileName()
     {
         return 'create_' . Str::lower($this->containerName) . '_tables';
+    }
+
+    /**
+     * Removes "special characters" from a string
+     *
+     * @param $str
+     *
+     * @return string
+     */
+    protected function removeSpecialChars($str)
+    {
+        return $str;
     }
 }

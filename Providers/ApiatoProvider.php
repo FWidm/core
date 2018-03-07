@@ -2,17 +2,18 @@
 
 namespace Apiato\Core\Providers;
 
+use Apiato\Core\Abstracts\Events\Providers\EventServiceProvider;
 use Apiato\Core\Abstracts\Providers\MainProvider as AbstractMainProvider;
 use Apiato\Core\Foundation\Apiato;
 use Apiato\Core\Generator\GeneratorsServiceProvider;
 use Apiato\Core\Loaders\AutoLoaderTrait;
 use Apiato\Core\Loaders\FactoriesLoaderTrait;
 use Apiato\Core\Traits\ValidationTrait;
-use Apiato\Core\Abstracts\Events\Providers\EventServiceProvider;
 use App\Ship\Parents\Providers\RoutesProvider;
 use App\Ship\Providers\ShipProvider;
 use Barryvdh\Cors\ServiceProvider as CorsServiceProvider;
 use Illuminate\Support\Facades\Schema;
+use Laravel\Tinker\TinkerServiceProvider;
 use Optimus\Heimdal\Provider\LaravelServiceProvider as HeimdalExceptionsServiceProvider;
 use Prettus\Repository\Providers\RepositoryServiceProvider;
 use Spatie\Fractal\FractalFacade;
@@ -47,6 +48,9 @@ class ApiatoProvider extends AbstractMainProvider
         CorsServiceProvider::class,
         FractalServiceProvider::class,
         HeimdalExceptionsServiceProvider::class,
+
+        // add the Laravel Tinker Service Provider
+        TinkerServiceProvider::class,
 
         // Internal Apiato Providers:
         EventServiceProvider::class, //The custom apiato eventserviceprovider

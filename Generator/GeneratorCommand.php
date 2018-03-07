@@ -90,8 +90,8 @@ abstract class GeneratorCommand extends Command
     private $fileSystem;
 
     private $defaultInputs = [
-        ['container', 'c', InputOption::VALUE_OPTIONAL, 'The name of the container'],
-        ['file', 'f', InputOption::VALUE_OPTIONAL, 'The name of the file'],
+        ['container', null, InputOption::VALUE_OPTIONAL, 'The name of the container'],
+        ['file', null, InputOption::VALUE_OPTIONAL, 'The name of the file'],
     ];
 
     /**
@@ -108,6 +108,7 @@ abstract class GeneratorCommand extends Command
 
     /**
      * @void
+     *
      * @throws \Apiato\Core\Generator\Exceptions\GeneratorErrorException
      */
     public function handle()
@@ -117,6 +118,11 @@ abstract class GeneratorCommand extends Command
         $this->containerName = ucfirst($this->checkParameterOrAsk('container', 'Enter the name of the Container'));
         $this->fileName = $this->checkParameterOrAsk('file', 'Enter the name of the ' . $this->fileType . ' file', $this->getDefaultFileName());
 
+        // now fix the container and file name
+        $this->containerName = $this->removeSpecialChars($this->containerName);
+        $this->fileName = $this->removeSpecialChars($this->fileName);
+
+        // and we are ready to start
         $this->printStartedMessage($this->containerName, $this->fileName);
 
         // get user inputs
@@ -265,19 +271,24 @@ abstract class GeneratorCommand extends Command
         return $value;
     }
 
+    /**
+     * @param      $param
+     * @param      $question
+     * @param bool $default
+     *
+     * @return mixed
+     */
     protected function checkParameterOrConfirm($param, $question, $default = false)
     {
         // check if we have already have a param set
         $value = $this->option($param);
-        if($value == null)
+        if ($value === null)
         {
             // there was no value provided via CLI, so ask the user..
             $value = $this->confirm($question, $default);
         }
 
-        // we need to parse the output value to a boolean value, as the values are strings (e.g., "true"), when they
-        // are read from the command line...
-        return filter_var($value, FILTER_VALIDATE_BOOLEAN);
+        return $value;
     }
 
     /**
@@ -322,6 +333,21 @@ abstract class GeneratorCommand extends Command
     protected function getDefaultFileExtension()
     {
         return 'php';
+    }
+
+    /**
+     * Removes "special characters" from a string
+     *
+     * @param $str
+     *
+     * @return string
+     */
+    protected function removeSpecialChars($str)
+    {
+        // remove everything that is NOT a character or digit
+        $str = preg_replace('/[^A-Za-z0-9]/', '', $str);
+
+        return $str;
     }
 
 }

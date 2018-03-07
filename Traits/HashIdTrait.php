@@ -4,10 +4,10 @@ namespace Apiato\Core\Traits;
 
 use App\Ship\Exceptions\IncorrectIdException;
 use Illuminate\Support\Facades\Config;
-use function is_null;
 use Route;
-use function strtolower;
 use Vinkla\Hashids\Facades\Hashids;
+use function is_null;
+use function strtolower;
 
 /**
  * Class HashIdTrait.
@@ -26,20 +26,29 @@ trait HashIdTrait
     ];
 
     /**
+     * Hashes the value of a field (e.g., ID)
+     *
      * Will be used by the Eloquent Models (since it's used as trait there).
      *
-     * @param null $key
+     * @param null $field The field of the model to be hashed
      *
      * @return  mixed
      */
-    public function getHashedKey($key = null)
+    public function getHashedKey($field = null)
     {
-        // hash the ID only if hash-id enabled in the config
-        if (Config::get('apiato.hash-id')) {
-            return $this->encoder(($key) ? : $this->getKey());
+        // if no key is set, use the default key name (i.e., id)
+        if ($field === null) {
+            $field = $this->getKeyName();
         }
 
-        return $this->getKey();
+        // hash the ID only if hash-id enabled in the config
+        if (Config::get('apiato.hash-id')) {
+            // we need to get the VALUE for this KEY (model field)
+            $value = $this->getAttribute($field);
+            return $this->encoder($value);
+        }
+
+        return $this->getAttribute($field);
     }
 
     /**
@@ -92,7 +101,7 @@ trait HashIdTrait
     private function processField($data, $keysTodo)
     {
         // check if there are no more fields to be processed
-        if(empty($keysTodo)) {
+        if (empty($keysTodo)) {
             // there are no more keys left - so basically we need to decode this entry
             $decodedId = $this->decode($data);
             return $decodedId;
@@ -102,21 +111,20 @@ trait HashIdTrait
         $field = array_shift($keysTodo);
 
         // is the current field an array?! we need to process it like crazy
-        if($field == '*') {
+        if ($field == '*') {
             //make sure field value is an array
             $data = is_array($data) ? $data : [$data];
 
             // process each field of the array (and go down one level!)
             $fields = $data;
-            foreach($fields as $key => $value) {
+            foreach ($fields as $key => $value) {
                 $data[$key] = $this->processField($value, $keysTodo);
             }
             return $data;
 
-        }
-        else {
+        } else {
             // check if the key we are looking for does, in fact, really exist
-            if(! array_key_exists($field, $data)) {
+            if (!array_key_exists($field, $data)) {
                 return $data;
             }
 
@@ -172,12 +180,13 @@ trait HashIdTrait
      * @param      $id
      * @param null $parameter
      *
-     * @return  array
+     * @return array
+     * @throws IncorrectIdException
      */
     public function decode($id, $parameter = null)
     {
         // check if passed as null, (could be an optional decodable variable)
-        if(is_null($id) || strtolower($id) == 'null'){
+        if (is_null($id) || strtolower($id) == 'null') {
             return $id;
         }
 

@@ -24,8 +24,12 @@ use Apiato\Core\Generator\Commands\SeederGenerator;
 use Apiato\Core\Generator\Commands\ServiceProviderGenerator;
 use Apiato\Core\Generator\Commands\SubActionGenerator;
 use Apiato\Core\Generator\Commands\TaskGenerator;
+use Apiato\Core\Generator\Commands\TestFunctionalTestGenerator;
+use Apiato\Core\Generator\Commands\TestTestCaseGenerator;
+use Apiato\Core\Generator\Commands\TestUnitTestGenerator;
 use Apiato\Core\Generator\Commands\TransformerGenerator;
-use Apiato\Core\Generator\Commands\ValueObjectGenerator;
+use Apiato\Core\Generator\Commands\TransporterGenerator;
+use Apiato\Core\Generator\Commands\ValueGenerator;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -76,9 +80,13 @@ class GeneratorsServiceProvider extends ServiceProvider
             SeederGenerator::class,
             ServiceProviderGenerator::class,
             SubActionGenerator::class,
+            TestFunctionalTestGenerator::class,
+            TestTestCaseGenerator::class,
+            TestUnitTestGenerator::class,
             TaskGenerator::class,
             TransformerGenerator::class,
-            ValueObjectGenerator::class,
+            TransporterGenerator::class,
+            ValueGenerator::class,
         ]);
     }
 
